@@ -1,0 +1,15 @@
+[package]
+name = "txtframe"
+version = "0.1.0"
+edition = "2021"
+authors = ["Karl Wulfert <pic16f877.ccs@emailn.de>"]
+readme = "README.md"
+repository = "https://github.com/pic16f877ccs/txtframe"
+homepage = "https://github.com/pic16f877ccs/txtframe"
+license = "GPL-3.0-or-later"
+description = "Creates a frame for text."
+keywords = ["text", "frame, formatt"]
+categories = ["Text processing"]
+
+[dependencies]
+smallstr = "0.3.0"
