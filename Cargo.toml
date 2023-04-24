@@ -8,7 +8,7 @@ repository = "https://github.com/pic16f877ccs/txtframe"
 homepage = "https://github.com/pic16f877ccs/txtframe"
 license = "GPL-3.0-or-later"
 description = "Creates a frame for text."
-keywords = ["text", "frame, formatt"]
+keywords = ["text", "frame", "format"]
 categories = ["Text processing"]
 
 [dependencies]
