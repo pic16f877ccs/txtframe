@@ -9,7 +9,7 @@ homepage = "https://github.com/pic16f877ccs/txtframe"
 license = "GPL-3.0-or-later"
 description = "Creates a frame for text."
 keywords = ["text", "frame", "format"]
-categories = ["Text processing"]
+categories = ["text-processing"]
 
 [dependencies]
 smallstr = "0.3.0"
