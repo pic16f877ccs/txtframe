@@ -531,3 +531,24 @@ fn test_default_frame_expand_fill_green() {
     );
 }
 
+#[test]
+fn test_default_frame_cyan_expand_fill_magenta() {
+    let txtframe = TextFrame::new().expand(1).fill('░').color_fra(Color::Cyan).color_fill(Color::Magenta);
+    let txtframe_iter = txtframe.frame_iter("");
+
+    assert_eq!(
+        &txtframe_iter.collect::<String>(),
+        "\u{1b}[36m┌──┐\n│\u{1b}[35m░░\u{1b}[36m│\n│\u{1b}[35m░░\u{1b}[36m│\n└──┘\u{1b}[0m"
+    );
+}
+
+#[test]
+fn test_default_frame_text() {
+    let txtframe = TextFrame::new();
+    let txtframe_iter = txtframe.frame_iter("Text Frame");
+
+    assert_eq!(
+        &txtframe_iter.collect::<String>(),
+        "\u{1b}[0m┌──────────┐\n│\u{1b}[0m\u{1b}[0mText Frame\u{1b}[0m\u{1b}[0m│\n└──────────┘\u{1b}[0m"
+    );
+}
