@@ -35,4 +35,9 @@ let mut text_frame = TextFrame::new()
 let text_frame_iter = text_frame.frame_iter("Text frame");
 println!("{}", text_frame_iter.collect::<String>());
 ```
+<img src="img/txtrame.png" width=60% height=60%>
+
+## License
+GNU General Public License v3.0 
+
 
