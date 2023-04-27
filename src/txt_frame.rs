@@ -216,7 +216,8 @@ impl TextFrame {
             .chain(iter::once("\n"))
             .chain(enlarge_line_iter.clone());
 
-        let bottom_half_frame_iter = (enlarge_line_iter)
+        let bottom_half_frame_iter = enlarge_line_iter
+            .chain(iter::once(self.color_fra.into_fg_str()))
             .chain(iter::once(self.left_btm_cnr.as_str()))
             .chain(iter::repeat(self.hor_btm_line.as_str()).take(max_line_len))
             .chain(iter::once(self.right_btm_cnr.as_str()))
@@ -232,7 +233,8 @@ impl TextFrame {
                 Algn::Right => (max_line_diff - sum_expands, sum_expands),
             };
 
-            let iter_top = iter::once(self.vert_left_line.as_str())
+            let iter_top = iter::once(self.color_fra.into_fg_str())
+                .chain(iter::once(self.vert_left_line.as_str()))
                 .chain(iter::once(self.color_fill.into_fg_str()))
                 .chain(iter::repeat(self.fill.as_str()).take(alignment.0));
 
@@ -472,7 +474,7 @@ fn test_default_frame() {
 
     assert_eq!(
         &txtframe_iter.collect::<String>(),
-        "\u{1b}[0m┌┐\n└┘\u{1b}[0m"
+        "\u{1b}[0m┌┐\n\u{1b}[0m└┘\u{1b}[0m"
     );
 }
 
@@ -483,7 +485,7 @@ fn test_default_frame_expand() {
 
     assert_eq!(
         &txtframe_iter.collect::<String>(),
-        "\u{1b}[0m┌──┐\n│\u{1b}[0m  \u{1b}[0m│\n│\u{1b}[0m  \u{1b}[0m│\n└──┘\u{1b}[0m"
+        "\u{1b}[0m┌──┐\n│\u{1b}[0m  \u{1b}[0m│\n│\u{1b}[0m  \u{1b}[0m│\n\u{1b}[0m└──┘\u{1b}[0m"
     );
 }
 
@@ -494,7 +496,7 @@ fn test_default_frame_expand_width() {
 
     assert_eq!(
         &txtframe_iter.collect::<String>(),
-        "\u{1b}[0m┌──┐\n└──┘\u{1b}[0m"
+        "\u{1b}[0m┌──┐\n\u{1b}[0m└──┘\u{1b}[0m"
     );
 }
 
@@ -505,7 +507,7 @@ fn test_default_frame_red() {
 
     assert_eq!(
         &txtframe_iter.collect::<String>(),
-        "\u{1b}[31m┌┐\n└┘\u{1b}[0m"
+        "\u{1b}[31m┌┐\n\u{1b}[31m└┘\u{1b}[0m"
     );
 }
 
@@ -516,7 +518,7 @@ fn test_default_frame_expand_blue() {
 
     assert_eq!(
         &txtframe_iter.collect::<String>(),
-        "\u{1b}[34m┌──┐\n│\u{1b}[0m  \u{1b}[34m│\n│\u{1b}[0m  \u{1b}[34m│\n└──┘\u{1b}[0m"
+        "\u{1b}[34m┌──┐\n│\u{1b}[0m  \u{1b}[34m│\n│\u{1b}[0m  \u{1b}[34m│\n\u{1b}[34m└──┘\u{1b}[0m"
     );
 }
 
@@ -527,7 +529,7 @@ fn test_default_frame_expand_fill_green() {
 
     assert_eq!(
         &txtframe_iter.collect::<String>(),
-        "\u{1b}[32m┌──┐\n│\u{1b}[0m░░\u{1b}[32m│\n│\u{1b}[0m░░\u{1b}[32m│\n└──┘\u{1b}[0m"
+        "\u{1b}[32m┌──┐\n│\u{1b}[0m░░\u{1b}[32m│\n│\u{1b}[0m░░\u{1b}[32m│\n\u{1b}[32m└──┘\u{1b}[0m"
     );
 }
 
@@ -538,7 +540,7 @@ fn test_default_frame_cyan_expand_fill_magenta() {
 
     assert_eq!(
         &txtframe_iter.collect::<String>(),
-        "\u{1b}[36m┌──┐\n│\u{1b}[35m░░\u{1b}[36m│\n│\u{1b}[35m░░\u{1b}[36m│\n└──┘\u{1b}[0m"
+        "\u{1b}[36m┌──┐\n│\u{1b}[35m░░\u{1b}[36m│\n│\u{1b}[35m░░\u{1b}[36m│\n\u{1b}[36m└──┘\u{1b}[0m"
     );
 }
 
@@ -549,6 +551,6 @@ fn test_default_frame_text() {
 
     assert_eq!(
         &txtframe_iter.collect::<String>(),
-        "\u{1b}[0m┌──────────┐\n│\u{1b}[0m\u{1b}[0mText Frame\u{1b}[0m\u{1b}[0m│\n└──────────┘\u{1b}[0m"
+        "\u{1b}[0m┌──────────┐\n\u{1b}[0m│\u{1b}[0m\u{1b}[0mText Frame\u{1b}[0m\u{1b}[0m│\n\u{1b}[0m└──────────┘\u{1b}[0m"
     );
 }
