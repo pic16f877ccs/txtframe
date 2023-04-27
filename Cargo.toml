@@ -13,3 +13,7 @@ categories = ["text-processing"]
 
 [dependencies]
 smallstr = "0.3.0"
+
+[features]
+color = []
+default = ["color"]
