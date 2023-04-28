@@ -200,14 +200,15 @@ impl TextFrame {
             max_line_len
         } + sum_expands * 2;
 
-        let enlarge_line_iter = iter::once(self.vert_left_line.as_str())
+        let enlarge_line_iter = iter::once(self.color_fra.into_fg_str())
+            .chain(iter::once(self.vert_left_line.as_str()))
             .chain(iter::once(self.color_fill.into_fg_str()))
             .chain(iter::repeat(self.fill.as_str()).take(max_line_len))
             .chain(iter::once(self.color_fra.into_fg_str()))
             .chain(iter::once(self.vert_right_line.as_str()))
-            .chain(iter::once("\n"))
+        .chain(iter::once("\n"))
             .cycle()
-            .take((max_line_len + 5) * (self.expand + self.expand_height));
+            .take((max_line_len + 6) * (self.expand + self.expand_height));
 
         let top_half_frame_iter = iter::once(self.color_fra.into_fg_str())
             .chain(iter::once(self.left_top_cnr.as_str()))
@@ -485,7 +486,7 @@ fn test_default_frame_expand() {
 
     assert_eq!(
         &txtframe_iter.collect::<String>(),
-        "\u{1b}[0m┌──┐\n│\u{1b}[0m  \u{1b}[0m│\n│\u{1b}[0m  \u{1b}[0m│\n\u{1b}[0m└──┘\u{1b}[0m"
+        "\u{1b}[0m┌──┐\n\u{1b}[0m│\u{1b}[0m  \u{1b}[0m│\n\u{1b}[0m│\u{1b}[0m  \u{1b}[0m│\n\u{1b}[0m└──┘\u{1b}[0m"
     );
 }
 
@@ -518,7 +519,7 @@ fn test_default_frame_expand_blue() {
 
     assert_eq!(
         &txtframe_iter.collect::<String>(),
-        "\u{1b}[34m┌──┐\n│\u{1b}[0m  \u{1b}[34m│\n│\u{1b}[0m  \u{1b}[34m│\n\u{1b}[34m└──┘\u{1b}[0m"
+        "\u{1b}[34m┌──┐\n\u{1b}[34m│\u{1b}[0m  \u{1b}[34m│\n\u{1b}[34m│\u{1b}[0m  \u{1b}[34m│\n\u{1b}[34m└──┘\u{1b}[0m"
     );
 }
 
@@ -529,7 +530,7 @@ fn test_default_frame_expand_fill_green() {
 
     assert_eq!(
         &txtframe_iter.collect::<String>(),
-        "\u{1b}[32m┌──┐\n│\u{1b}[0m░░\u{1b}[32m│\n│\u{1b}[0m░░\u{1b}[32m│\n\u{1b}[32m└──┘\u{1b}[0m"
+        "\u{1b}[32m┌──┐\n\u{1b}[32m│\u{1b}[0m░░\u{1b}[32m│\n\u{1b}[32m│\u{1b}[0m░░\u{1b}[32m│\n\u{1b}[32m└──┘\u{1b}[0m"
     );
 }
 
@@ -540,7 +541,7 @@ fn test_default_frame_cyan_expand_fill_magenta() {
 
     assert_eq!(
         &txtframe_iter.collect::<String>(),
-        "\u{1b}[36m┌──┐\n│\u{1b}[35m░░\u{1b}[36m│\n│\u{1b}[35m░░\u{1b}[36m│\n\u{1b}[36m└──┘\u{1b}[0m"
+        "\u{1b}[36m┌──┐\n\u{1b}[36m│\u{1b}[35m░░\u{1b}[36m│\n\u{1b}[36m│\u{1b}[35m░░\u{1b}[36m│\n\u{1b}[36m└──┘\u{1b}[0m"
     );
 }
 
