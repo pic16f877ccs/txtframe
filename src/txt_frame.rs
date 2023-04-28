@@ -461,6 +461,7 @@ impl TextFrame {
     }
 }
 
+#[inline]
 fn max_line_len(text: &str) -> usize {
     text.lines()
         .map(|line| line.chars().count())
