@@ -406,7 +406,7 @@ impl TextFrame {
     }
 
     /// Change the alignment value.
-    pub fn set_algn(&mut self, algn: Algn) -> &Self {
+    pub fn set_algn(&mut self, algn: Algn) -> &mut Self {
         self.algn = algn;
         self
     }
