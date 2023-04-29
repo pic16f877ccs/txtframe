@@ -472,94 +472,99 @@ fn max_line_len(text: &str) -> usize {
         .unwrap_or(0)
 }
 
-#[test]
-fn test_default_frame() {
-    let txtframe = TextFrame::new();
-    let txtframe_iter = txtframe.frame_iter("");
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    assert_eq!(
-        &txtframe_iter.collect::<String>(),
-        "\u{1b}[0m┌┐\u{1b}[0m\n\u{1b}[0m└┘\u{1b}[0m"
-    );
-}
+    #[test]
+    fn test_default_frame() {
+        let txtframe = TextFrame::new();
+        let txtframe_iter = txtframe.frame_iter("");
 
-#[test]
-fn test_default_frame_expand() {
-    let txtframe = TextFrame::new().expand(1);
-    let txtframe_iter = txtframe.frame_iter("");
+        assert_eq!(
+            &txtframe_iter.collect::<String>(),
+            "\u{1b}[0m┌┐\u{1b}[0m\n\u{1b}[0m└┘\u{1b}[0m"
+        );
+    }
 
-    assert_eq!(
+    #[test]
+    fn test_default_frame_expand() {
+        let txtframe = TextFrame::new().expand(1);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(
         &txtframe_iter.collect::<String>(),
         "\u{1b}[0m┌──┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m  \u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m  \u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└──┘\u{1b}[0m"
     );
-}
+    }
 
-#[test]
-fn test_default_frame_expand_width() {
-    let txtframe = TextFrame::new().expand_width(1);
-    let txtframe_iter = txtframe.frame_iter("");
+    #[test]
+    fn test_default_frame_expand_width() {
+        let txtframe = TextFrame::new().expand_width(1);
+        let txtframe_iter = txtframe.frame_iter("");
 
-    assert_eq!(
-        &txtframe_iter.collect::<String>(),
-        "\u{1b}[0m┌──┐\u{1b}[0m\n\u{1b}[0m└──┘\u{1b}[0m"
-    );
-}
+        assert_eq!(
+            &txtframe_iter.collect::<String>(),
+            "\u{1b}[0m┌──┐\u{1b}[0m\n\u{1b}[0m└──┘\u{1b}[0m"
+        );
+    }
 
-#[test]
-fn test_default_frame_red() {
-    let txtframe = TextFrame::new().color_fra(Color::Red);
-    let txtframe_iter = txtframe.frame_iter("");
+    #[test]
+    fn test_default_frame_red() {
+        let txtframe = TextFrame::new().color_fra(Color::Red);
+        let txtframe_iter = txtframe.frame_iter("");
 
-    assert_eq!(
-        &txtframe_iter.collect::<String>(),
-        "\u{1b}[31m┌┐\u{1b}[0m\n\u{1b}[31m└┘\u{1b}[0m"
-    );
-}
+        assert_eq!(
+            &txtframe_iter.collect::<String>(),
+            "\u{1b}[31m┌┐\u{1b}[0m\n\u{1b}[31m└┘\u{1b}[0m"
+        );
+    }
 
-#[test]
-fn test_default_frame_expand_blue() {
-    let txtframe = TextFrame::new().expand(1).color_fra(Color::Blue);
-    let txtframe_iter = txtframe.frame_iter("");
+    #[test]
+    fn test_default_frame_expand_blue() {
+        let txtframe = TextFrame::new().expand(1).color_fra(Color::Blue);
+        let txtframe_iter = txtframe.frame_iter("");
 
-    assert_eq!(
+        assert_eq!(
         &txtframe_iter.collect::<String>(),
         "\u{1b}[34m┌──┐\u{1b}[0m\n\u{1b}[34m│\u{1b}[0m  \u{1b}[34m│\u{1b}[0m\n\u{1b}[34m│\u{1b}[0m  \u{1b}[34m│\u{1b}[0m\n\u{1b}[34m└──┘\u{1b}[0m"
     );
-}
+    }
 
-#[test]
-fn test_default_frame_expand_fill_green() {
-    let txtframe = TextFrame::new().expand(1).fill('░').color_fra(Color::Green);
-    let txtframe_iter = txtframe.frame_iter("");
+    #[test]
+    fn test_default_frame_expand_fill_green() {
+        let txtframe = TextFrame::new().expand(1).fill('░').color_fra(Color::Green);
+        let txtframe_iter = txtframe.frame_iter("");
 
-    assert_eq!(
+        assert_eq!(
         &txtframe_iter.collect::<String>(),
         "\u{1b}[32m┌──┐\u{1b}[0m\n\u{1b}[32m│\u{1b}[0m░░\u{1b}[32m│\u{1b}[0m\n\u{1b}[32m│\u{1b}[0m░░\u{1b}[32m│\u{1b}[0m\n\u{1b}[32m└──┘\u{1b}[0m"
     );
-}
+    }
 
-#[test]
-fn test_default_frame_cyan_expand_fill_magenta() {
-    let txtframe = TextFrame::new()
-        .expand(1)
-        .fill('░')
-        .color_fra(Color::Cyan)
-        .color_fill(Color::Magenta);
-    let txtframe_iter = txtframe.frame_iter("");
+    #[test]
+    fn test_default_frame_cyan_expand_fill_magenta() {
+        let txtframe = TextFrame::new()
+            .expand(1)
+            .fill('░')
+            .color_fra(Color::Cyan)
+            .color_fill(Color::Magenta);
+        let txtframe_iter = txtframe.frame_iter("");
 
-    assert_eq!(
+        assert_eq!(
         &txtframe_iter.collect::<String>(),
         "\u{1b}[36m┌──┐\u{1b}[0m\n\u{1b}[36m│\u{1b}[35m░░\u{1b}[36m│\u{1b}[0m\n\u{1b}[36m│\u{1b}[35m░░\u{1b}[36m│\u{1b}[0m\n\u{1b}[36m└──┘\u{1b}[0m"
     );
-}
+    }
 
-#[test]
-fn test_default_frame_text() {
-    let txtframe = TextFrame::new();
-    let txtframe_iter = txtframe.frame_iter("Text Frame");
+    #[test]
+    fn test_default_frame_text() {
+        let txtframe = TextFrame::new();
+        let txtframe_iter = txtframe.frame_iter("Text Frame");
 
-    assert_eq!(
+        assert_eq!(
         &txtframe_iter.collect::<String>(),
         "\u{1b}[0m┌──────────┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0mText Frame\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└──────────┘\u{1b}[0m"
     );
+    }
 }
