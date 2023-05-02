@@ -395,62 +395,8 @@ impl TextFrame {
         self
     }
 
-    /// Change top left corner.
-    pub fn set_left_top(&mut self, ch: char) -> &mut Self {
-        self.left_top_cnr = ch.into();
-        self
-    }
-
-    /// Change top line.
-    pub fn set_top_line(&mut self, ch: char) -> &mut Self {
-        self.hor_top_line = ch.into();
-        self
-    }
-
-    /// Change top right corner.
-    pub fn set_right_top(&mut self, ch: char) -> &mut Self {
-        self.right_top_cnr = ch.into();
-        self
-    }
-
-    /// Change left vertical line.
-    pub fn set_vert_left(&mut self, ch: char) -> &mut Self {
-        self.vert_left_line = ch.into();
-        self
-    }
-
-    /// Change right vertical line.
-    pub fn set_vert_right(&mut self, ch: char) -> &mut Self {
-        self.vert_right_line = ch.into();
-        self
-    }
-
-    /// Change bottom left corner.
-    pub fn set_left_btm(&mut self, ch: char) -> &mut Self {
-        self.left_btm_cnr = ch.into();
-        self
-    }
-
-    /// Change bottom line.
-    pub fn set_btm_line(&mut self, ch: char) -> &mut Self {
-        self.hor_btm_line = ch.into();
-        self
-    }
-
-    /// Change bottom right corner.
-    pub fn set_right_btm(&mut self, ch: char) -> &mut Self {
-        self.right_btm_cnr = ch.into();
-        self
-    }
-
     /// Value for frame width.
     pub fn width(mut self, width: usize) -> Self {
-        self.width = width;
-        self
-    }
-
-    /// Change frame width.
-    pub fn set_width(&mut self, width: usize) -> &mut Self {
         self.width = width;
         self
     }
@@ -461,20 +407,8 @@ impl TextFrame {
         self
     }
 
-    /// Change frame height.
-    pub fn set_height(&mut self, height: usize) -> &mut Self {
-        self.height = height;
-        self
-    }
-
     /// Value for frame width expand.
     pub fn expand_width(mut self, width: usize) -> Self {
-        self.expand_width = width;
-        self
-    }
-
-    /// Change the Expand Width value.
-    pub fn set_expand_width(&mut self, width: usize) -> &mut Self {
         self.expand_width = width;
         self
     }
@@ -485,20 +419,8 @@ impl TextFrame {
         self
     }
 
-    /// Change the Expand Height value.
-    pub fn set_expand_height(&mut self, height: usize) -> &mut Self {
-        self.expand_height = height;
-        self
-    }
-
     /// Value for frame expand.
     pub fn expand(mut self, expand: usize) -> Self {
-        self.expand = expand;
-        self
-    }
-
-    /// Change the expand value.
-    pub fn set_expand(&mut self, expand: usize) -> &mut Self {
         self.expand = expand;
         self
     }
@@ -509,20 +431,8 @@ impl TextFrame {
         self
     }
 
-    /// Change the alignment value.
-    pub fn set_algn(&mut self, algn: Algn) -> &mut Self {
-        self.algn = algn;
-        self
-    }
-
     /// Value for fill expand.
     pub fn fill(mut self, fill: char) -> Self {
-        self.fill = fill.into();
-        self
-    }
-
-    /// Change the fill value.
-    pub fn set_fill(&mut self, fill: char) -> &mut Self {
         self.fill = fill.into();
         self
     }
@@ -534,13 +444,6 @@ impl TextFrame {
         self
     }
 
-    /// Change frame color.
-    #[cfg(feature = "color")]
-    pub fn set_color_fra(&mut self, color: Color) -> &mut Self {
-        self.color_fra = color;
-        self
-    }
-
     /// Specifies the text color.
     #[cfg(feature = "color")]
     pub fn color_txt(mut self, color: Color) -> Self {
@@ -548,23 +451,9 @@ impl TextFrame {
         self
     }
 
-    /// Change text color.
-    #[cfg(feature = "color")]
-    pub fn set_color_txt(&mut self, color: Color) -> &mut Self {
-        self.color_txt = color;
-        self
-    }
-
     /// Specifies the fill color.
     #[cfg(feature = "color")]
     pub fn color_fill(mut self, color: Color) -> Self {
-        self.color_fill = color;
-        self
-    }
-
-    /// Change fill color.
-    #[cfg(feature = "color")]
-    pub fn set_color_fill(&mut self, color: Color) -> &mut Self {
         self.color_fill = color;
         self
     }
@@ -739,6 +628,54 @@ mod tests {
 "\u{1b}[0m┌──────────┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0mText Frame\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m          \u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m          \u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└──────────┘\u{1b}[0m");
     }
 
+    #[test]
+    fn test_default_frame_text_line_count_four() {
+        let txtframe = TextFrame::new().height(4);
+        let txtframe_iter = txtframe.frame_iter("First line\nsecond line.");
+
+        assert_eq!(txtframe_iter.collect::<String>().lines().count(), 4);
+    }
+
+    #[test]
+    fn test_default_frame_text_line_count_height_five() {
+        let txtframe = TextFrame::new().height(5);
+        let txtframe_iter = txtframe.frame_iter("First line\nsecond line.");
+
+        assert_eq!(txtframe_iter.collect::<String>().lines().count(), 5);
+    }
+
+    #[test]
+    fn test_default_frame_text_line_count_height_ten() {
+        let txtframe = TextFrame::new().height(10);
+        let txtframe_iter = txtframe.frame_iter("First line\nsecond line.");
+
+        assert_eq!(txtframe_iter.collect::<String>().lines().count(), 10);
+    }
+
+    #[test]
+    fn test_default_frame_text_line_count_height_zero() {
+        let txtframe = TextFrame::new().height(0);
+        let txtframe_iter = txtframe.frame_iter("First line\nsecond line.");
+
+        assert_eq!(txtframe_iter.collect::<String>().lines().count(), 4);
+    }
+
+    #[test]
+    fn test_default_frame_text_line_count_height_zero_empy() {
+        let txtframe = TextFrame::new().height(0);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(txtframe_iter.collect::<String>().lines().count(), 2);
+    }
+
+    #[test]
+    fn test_default_frame_text_line_count_newline() {
+        let txtframe = TextFrame::new();
+        let txtframe_iter = txtframe.frame_iter("\n");
+
+        assert_eq!(txtframe_iter.collect::<String>().lines().count(), 3);
+    }
+
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_height_lt() {
@@ -786,5 +723,4 @@ mod tests {
         "\u{1b}[0m┌───────────┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0mText Frame\u{1b}[0m \u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└───────────┘\u{1b}[0m"
     );
     }
-
 }
