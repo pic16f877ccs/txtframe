@@ -203,20 +203,21 @@ impl TextFrame {
     #[cfg(feature = "color")]
     /// Create an iterator frame.
     pub fn frame_iter<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
-        let sum_exp_width = self.expand_width + self.expand;
         let (lines, max_line_len) = max_line_len(text);
-        let sum_exp_height = self.expand + self.expand_height;
-        let sum_lines = sum_exp_height * 2 + 2 + lines;
 
+        let sum_exp_width = self.expand_width + self.expand;
         let max_line_len = if ((max_line_len + 2) + sum_exp_width * 2) < self.width {
             (self.width - (max_line_len + 2 + sum_exp_width * 2)) + max_line_len
         } else {
             max_line_len
         } + sum_exp_width * 2;
 
+        let sum_exp_height = self.expand + self.expand_height;
+        let sum_lines = sum_exp_height * 2 + 2 + lines;
         let take_enlarge_top = (max_line_len + 7) * sum_exp_height;
+
         let take_enlarge_btm = if sum_lines < self.height {
-            (max_line_len + 7) * (self.height - sum_lines)
+            take_enlarge_top + (max_line_len + 7) * (self.height - sum_lines)
         } else {
             take_enlarge_top
         };
