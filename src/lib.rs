@@ -13,7 +13,7 @@
 //!
 //! ```
 //! # use txtframe::*;
-//!
+//! # #[cfg(feature = "color")]
 //! let mut text_frame = TextFrame::new()
 //!     .frame_var(&FrameVar::Space)
 //!     .algn(Algn::Centr)
@@ -33,16 +33,21 @@
 //!     .vert_right('│')
 //!     .btm_line('―')
 //!     .fill('░');
+//!
+//! # #[cfg(feature = "color")]
 //! let text_frame_iter = text_frame.frame_iter("Text frame");
+//! # #[cfg(feature = "color")]
 //! println!("{}", text_frame_iter.collect::<String>());
 //! ```
 
 mod algn;
+#[cfg(feature = "color")]
 mod color;
 mod frame_var;
 mod txt_frame;
 
 pub use crate::algn::Algn;
+#[cfg(feature = "color")]
 pub use crate::color::Color;
 pub use crate::frame_var::FrameVar;
 pub use crate::txt_frame::TextFrame;

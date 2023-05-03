@@ -1,4 +1,5 @@
 use crate::Algn;
+#[cfg(feature = "color")]
 use crate::Color;
 use crate::FrameVar;
 use core::iter;
@@ -11,6 +12,7 @@ use smallstr::SmallString;
 /// ```rust
 /// # use txtframe::*;
 ///
+/// # #[cfg(feature = "color")]
 /// let mut text_frame = TextFrame::new()
 ///     .frame_var(&FrameVar::Space)
 ///     .algn(Algn::Centr)
@@ -44,12 +46,16 @@ pub struct TextFrame {
     right_btm_cnr: SmallString<[u8; 4]>,
     fill: SmallString<[u8; 4]>,
     width: usize,
+    height: usize,
     expand: usize,
     expand_width: usize,
     expand_height: usize,
     algn: Algn,
+    #[cfg(feature = "color")]
     color_fra: Color,
+    #[cfg(feature = "color")]
     color_txt: Color,
+    #[cfg(feature = "color")]
     color_fill: Color,
 }
 
@@ -66,13 +72,17 @@ impl TextFrame {
             hor_btm_line: '─'.into(),
             right_btm_cnr: '┘'.into(),
             width: 0,
+            height: 0,
             expand: 0,
             expand_width: 0,
             expand_height: 0,
             fill: ' '.into(),
             algn: Algn::Left,
+            #[cfg(feature = "color")]
             color_fra: Color::Default,
+            #[cfg(feature = "color")]
             color_txt: Color::Default,
+            #[cfg(feature = "color")]
             color_fill: Color::Default,
         }
     }
@@ -190,15 +200,27 @@ impl TextFrame {
         }
     }
 
+    #[cfg(feature = "color")]
     /// Create an iterator frame.
     pub fn frame_iter<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
-        let sum_expands = self.expand_width + self.expand;
-        let mut max_line_len = max_line_len(text);
-        max_line_len = if max_line_len < self.width {
-            self.width
+        let (lines, max_line_len) = max_line_len(text);
+
+        let sum_exp_width = self.expand_width + self.expand;
+        let max_line_len = if ((max_line_len + 2) + sum_exp_width * 2) < self.width {
+            (self.width - (max_line_len + 2 + sum_exp_width * 2)) + max_line_len
         } else {
             max_line_len
-        } + sum_expands * 2;
+        } + sum_exp_width * 2;
+
+        let sum_exp_height = self.expand + self.expand_height;
+        let sum_lines = sum_exp_height * 2 + 2 + lines;
+        let take_enlarge_top = (max_line_len + 7) * sum_exp_height;
+
+        let take_enlarge_btm = if sum_lines < self.height {
+            take_enlarge_top + (max_line_len + 7) * (self.height - sum_lines)
+        } else {
+            take_enlarge_top
+        };
 
         let enlarge_line_iter = iter::once(self.color_fra.into_fg_str())
             .chain(iter::once(self.vert_left_line.as_str()))
@@ -208,8 +230,7 @@ impl TextFrame {
             .chain(iter::once(self.vert_right_line.as_str()))
             .chain(iter::once(Color::default().into_fg_str()))
             .chain(iter::once("\n"))
-            .cycle()
-            .take((max_line_len + 7) * (self.expand + self.expand_height));
+            .cycle();
 
         let top_half_frame_iter = iter::once(self.color_fra.into_fg_str())
             .chain(iter::once(self.left_top_cnr.as_str()))
@@ -217,9 +238,10 @@ impl TextFrame {
             .chain(iter::once(self.right_top_cnr.as_str()))
             .chain(iter::once(Color::default().into_fg_str()))
             .chain(iter::once("\n"))
-            .chain(enlarge_line_iter.clone());
+            .chain(enlarge_line_iter.clone().take(take_enlarge_top));
 
         let bottom_half_frame_iter = enlarge_line_iter
+            .take(take_enlarge_btm)
             .chain(iter::once(self.color_fra.into_fg_str()))
             .chain(iter::once(self.left_btm_cnr.as_str()))
             .chain(iter::repeat(self.hor_btm_line.as_str()).take(max_line_len))
@@ -231,9 +253,9 @@ impl TextFrame {
             let max_line_diff = max_line_len - curr_line_len;
 
             let alignment = match self.algn {
-                Algn::Left => (sum_expands, max_line_diff - sum_expands),
+                Algn::Left => (sum_exp_width, max_line_diff - sum_exp_width),
                 Algn::Centr => (max_line_diff / 2, max_line_diff - max_line_diff / 2),
-                Algn::Right => (max_line_diff - sum_expands, sum_expands),
+                Algn::Right => (max_line_diff - sum_exp_width, sum_exp_width),
             };
 
             let iter_top = iter::once(self.color_fra.into_fg_str())
@@ -249,6 +271,73 @@ impl TextFrame {
                 .chain(iter::once(self.color_fra.into_fg_str()))
                 .chain(iter::once(self.vert_right_line.as_str()))
                 .chain(iter::once(Color::default().into_fg_str()))
+                .chain(iter::once("\n"));
+
+            iter_top.chain(iter_line).chain(iter_bottom)
+        });
+
+        top_half_frame_iter
+            .chain(lines_buffer_iter)
+            .chain(bottom_half_frame_iter)
+    }
+
+    #[cfg(not(feature = "color"))]
+    /// Create an iterator frame.
+    pub fn frame_iter<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
+        let sum_exp_width = self.expand_width + self.expand;
+        let (lines, max_line_len) = max_line_len(text);
+        let sum_exp_height = self.expand + self.expand_height;
+        let sum_lines = sum_exp_height * 2 + 2 + lines;
+
+        let max_line_len = if ((max_line_len + 2) + sum_exp_width * 2) < self.width {
+            (self.width - (max_line_len + 2 + sum_exp_width * 2)) + max_line_len
+        } else {
+            max_line_len
+        } + sum_exp_width * 2;
+
+        let take_enlarge_top = (max_line_len + 3) * sum_exp_height;
+        let take_enlarge_btm = if sum_lines < self.height {
+            (max_line_len + 3) * (self.height - sum_lines)
+        } else {
+            take_enlarge_top
+        };
+
+        let enlarge_line_iter = iter::once(self.vert_left_line.as_str())
+            .chain(iter::repeat(self.fill.as_str()).take(max_line_len))
+            .chain(iter::once(self.vert_right_line.as_str()))
+            .chain(iter::once("\n"))
+            .cycle();
+
+        let top_half_frame_iter = iter::once(self.left_top_cnr.as_str())
+            .chain(iter::repeat(self.hor_top_line.as_str()).take(max_line_len))
+            .chain(iter::once(self.right_top_cnr.as_str()))
+            .chain(iter::once("\n"))
+            .chain(enlarge_line_iter.clone().take(take_enlarge_top));
+
+        let bottom_half_frame_iter = enlarge_line_iter
+            .take(take_enlarge_btm)
+            .chain(iter::once(self.left_btm_cnr.as_str()))
+            .chain(iter::repeat(self.hor_btm_line.as_str()).take(max_line_len))
+            .chain(iter::once(self.right_btm_cnr.as_str()));
+
+        let lines_buffer_iter = text.lines().flat_map(move |line| {
+            let curr_line_len = line.chars().count();
+            let max_line_diff = max_line_len - curr_line_len;
+
+            let alignment = match self.algn {
+                Algn::Left => (sum_exp_width, max_line_diff - sum_exp_width),
+                Algn::Centr => (max_line_diff / 2, max_line_diff - max_line_diff / 2),
+                Algn::Right => (max_line_diff - sum_exp_width, sum_exp_width),
+            };
+
+            let iter_top = iter::once(self.vert_left_line.as_str())
+                .chain(iter::repeat(self.fill.as_str()).take(alignment.0));
+
+            let iter_line = iter::once(line);
+
+            let iter_bottom = iter::repeat(self.fill.as_str())
+                .take(alignment.1)
+                .chain(iter::once(self.vert_right_line.as_str()))
                 .chain(iter::once("\n"));
 
             iter_top.chain(iter_line).chain(iter_bottom)
@@ -307,74 +396,20 @@ impl TextFrame {
         self
     }
 
-    /// Change top left corner.
-    pub fn set_left_top(&mut self, ch: char) -> &mut Self {
-        self.left_top_cnr = ch.into();
-        self
-    }
-
-    /// Change top line.
-    pub fn set_top_line(&mut self, ch: char) -> &mut Self {
-        self.hor_top_line = ch.into();
-        self
-    }
-
-    /// Change top right corner.
-    pub fn set_right_top(&mut self, ch: char) -> &mut Self {
-        self.right_top_cnr = ch.into();
-        self
-    }
-
-    /// Change left vertical line.
-    pub fn set_vert_left(&mut self, ch: char) -> &mut Self {
-        self.vert_left_line = ch.into();
-        self
-    }
-
-    /// Change right vertical line.
-    pub fn set_vert_right(&mut self, ch: char) -> &mut Self {
-        self.vert_right_line = ch.into();
-        self
-    }
-
-    /// Change bottom left corner.
-    pub fn set_left_btm(&mut self, ch: char) -> &mut Self {
-        self.left_btm_cnr = ch.into();
-        self
-    }
-
-    /// Change bottom line.
-    pub fn set_btm_line(&mut self, ch: char) -> &mut Self {
-        self.hor_btm_line = ch.into();
-        self
-    }
-
-    /// Change bottom right corner.
-    pub fn set_right_btm(&mut self, ch: char) -> &mut Self {
-        self.right_btm_cnr = ch.into();
-        self
-    }
-
     /// Value for frame width.
     pub fn width(mut self, width: usize) -> Self {
         self.width = width;
         self
     }
 
-    /// Change frame width.
-    pub fn set_width(&mut self, width: usize) -> &mut Self {
-        self.width = width;
+    /// Value for frame height.
+    pub fn height(mut self, height: usize) -> Self {
+        self.height = height;
         self
     }
 
     /// Value for frame width expand.
     pub fn expand_width(mut self, width: usize) -> Self {
-        self.expand_width = width;
-        self
-    }
-
-    /// Change the Expand Width value.
-    pub fn set_expand_width(&mut self, width: usize) -> &mut Self {
         self.expand_width = width;
         self
     }
@@ -385,20 +420,8 @@ impl TextFrame {
         self
     }
 
-    /// Change the Expand Height value.
-    pub fn set_expand_height(&mut self, height: usize) -> &mut Self {
-        self.expand_height = height;
-        self
-    }
-
     /// Value for frame expand.
     pub fn expand(mut self, expand: usize) -> Self {
-        self.expand = expand;
-        self
-    }
-
-    /// Change the expand value.
-    pub fn set_expand(&mut self, expand: usize) -> &mut Self {
         self.expand = expand;
         self
     }
@@ -409,73 +432,54 @@ impl TextFrame {
         self
     }
 
-    /// Change the alignment value.
-    pub fn set_algn(&mut self, algn: Algn) -> &mut Self {
-        self.algn = algn;
-        self
-    }
-
     /// Value for fill expand.
     pub fn fill(mut self, fill: char) -> Self {
         self.fill = fill.into();
         self
     }
 
-    /// Change the fill value.
-    pub fn set_fill(&mut self, fill: char) -> &mut Self {
-        self.fill = fill.into();
-        self
-    }
-
     /// Specifies the frame color.
+    #[cfg(feature = "color")]
     pub fn color_fra(mut self, color: Color) -> Self {
         self.color_fra = color;
         self
     }
 
-    /// Change frame color.
-    pub fn set_color_fra(&mut self, color: Color) -> &mut Self {
-        self.color_fra = color;
-        self
-    }
-
     /// Specifies the text color.
+    #[cfg(feature = "color")]
     pub fn color_txt(mut self, color: Color) -> Self {
         self.color_txt = color;
         self
     }
 
-    /// Change text color.
-    pub fn set_color_txt(&mut self, color: Color) -> &mut Self {
-        self.color_txt = color;
-        self
-    }
-
     /// Specifies the fill color.
+    #[cfg(feature = "color")]
     pub fn color_fill(mut self, color: Color) -> Self {
-        self.color_fill = color;
-        self
-    }
-
-    /// Change fill color.
-    pub fn set_color_fill(&mut self, color: Color) -> &mut Self {
         self.color_fill = color;
         self
     }
 }
 
 #[inline]
-fn max_line_len(text: &str) -> usize {
-    text.lines()
-        .map(|line| line.chars().count())
+fn max_line_len(text: &str) -> (usize, usize) {
+    let mut line_cout = 0;
+    let max_len = text
+        .lines()
+        .map(|line| {
+            line_cout += 1;
+            line.chars().count()
+        })
         .max()
-        .unwrap_or(0)
+        .unwrap_or(0);
+
+    (line_cout, max_len)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    #[cfg(feature = "color")]
     #[test]
     fn test_default_frame() {
         let txtframe = TextFrame::new();
@@ -487,6 +491,16 @@ mod tests {
         );
     }
 
+    #[cfg(not(feature = "color"))]
+    #[test]
+    fn test_default_frame() {
+        let txtframe = TextFrame::new();
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(&txtframe_iter.collect::<String>(), "┌┐\n└┘");
+    }
+
+    #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_expand() {
         let txtframe = TextFrame::new().expand(1);
@@ -498,6 +512,16 @@ mod tests {
     );
     }
 
+    #[cfg(not(feature = "color"))]
+    #[test]
+    fn test_default_frame_expand() {
+        let txtframe = TextFrame::new().expand(1);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(&txtframe_iter.collect::<String>(), "┌──┐\n│  │\n│  │\n└──┘");
+    }
+
+    #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_expand_width() {
         let txtframe = TextFrame::new().expand_width(1);
@@ -509,6 +533,16 @@ mod tests {
         );
     }
 
+    #[cfg(not(feature = "color"))]
+    #[test]
+    fn test_default_frame_expand_width() {
+        let txtframe = TextFrame::new().expand_width(1);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(&txtframe_iter.collect::<String>(), "┌──┐\n└──┘");
+    }
+
+    #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_red() {
         let txtframe = TextFrame::new().color_fra(Color::Red);
@@ -520,6 +554,7 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_expand_blue() {
         let txtframe = TextFrame::new().expand(1).color_fra(Color::Blue);
@@ -531,6 +566,7 @@ mod tests {
     );
     }
 
+    #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_expand_fill_green() {
         let txtframe = TextFrame::new().expand(1).fill('░').color_fra(Color::Green);
@@ -542,6 +578,7 @@ mod tests {
     );
     }
 
+    #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_cyan_expand_fill_magenta() {
         let txtframe = TextFrame::new()
@@ -557,6 +594,7 @@ mod tests {
     );
     }
 
+    #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_text() {
         let txtframe = TextFrame::new();
@@ -565,6 +603,125 @@ mod tests {
         assert_eq!(
         &txtframe_iter.collect::<String>(),
         "\u{1b}[0m┌──────────┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0mText Frame\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└──────────┘\u{1b}[0m"
+    );
+    }
+
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_height() {
+        let txtframe = TextFrame::new().height(3);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(
+            &txtframe_iter.collect::<String>(),
+            "\u{1b}[0m┌┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└┘\u{1b}[0m"
+        );
+    }
+
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_text_height() {
+        let txtframe = TextFrame::new().height(5);
+        let txtframe_iter = txtframe.frame_iter("Text Frame");
+
+        assert_eq!(
+            &txtframe_iter.collect::<String>(),
+"\u{1b}[0m┌──────────┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0mText Frame\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m          \u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m          \u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└──────────┘\u{1b}[0m");
+    }
+
+    #[test]
+    fn test_default_frame_text_line_count_four() {
+        let txtframe = TextFrame::new().height(4);
+        let txtframe_iter = txtframe.frame_iter("First line\nsecond line.");
+
+        assert_eq!(txtframe_iter.collect::<String>().lines().count(), 4);
+    }
+
+    #[test]
+    fn test_default_frame_text_line_count_height_five() {
+        let txtframe = TextFrame::new().height(5);
+        let txtframe_iter = txtframe.frame_iter("First line\nsecond line.");
+
+        assert_eq!(txtframe_iter.collect::<String>().lines().count(), 5);
+    }
+
+    #[test]
+    fn test_default_frame_text_line_count_height_ten() {
+        let txtframe = TextFrame::new().height(10);
+        let txtframe_iter = txtframe.frame_iter("First line\nsecond line.");
+
+        assert_eq!(txtframe_iter.collect::<String>().lines().count(), 10);
+    }
+
+    #[test]
+    fn test_default_frame_text_line_count_height_zero() {
+        let txtframe = TextFrame::new().height(0);
+        let txtframe_iter = txtframe.frame_iter("First line\nsecond line.");
+
+        assert_eq!(txtframe_iter.collect::<String>().lines().count(), 4);
+    }
+
+    #[test]
+    fn test_default_frame_text_line_count_height_zero_empy() {
+        let txtframe = TextFrame::new().height(0);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(txtframe_iter.collect::<String>().lines().count(), 2);
+    }
+
+    #[test]
+    fn test_default_frame_text_line_count_newline() {
+        let txtframe = TextFrame::new();
+        let txtframe_iter = txtframe.frame_iter("\n");
+
+        assert_eq!(txtframe_iter.collect::<String>().lines().count(), 3);
+    }
+
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_height_lt() {
+        let txtframe = TextFrame::new().height(2);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(
+            &txtframe_iter.collect::<String>(),
+            "\u{1b}[0m┌┐\u{1b}[0m\n\u{1b}[0m└┘\u{1b}[0m"
+        );
+    }
+
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_width() {
+        let txtframe = TextFrame::new().width(3);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(
+            &txtframe_iter.collect::<String>(),
+            "\u{1b}[0m┌─┐\u{1b}[0m\n\u{1b}[0m└─┘\u{1b}[0m"
+        );
+    }
+
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_width_lt() {
+        let txtframe = TextFrame::new().width(1);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(
+            &txtframe_iter.collect::<String>(),
+            "\u{1b}[0m┌┐\u{1b}[0m\n\u{1b}[0m└┘\u{1b}[0m"
+        );
+    }
+
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_text_width() {
+        let txtframe = TextFrame::new().width(13);
+        let txtframe_iter = txtframe.frame_iter("Text Frame");
+
+        assert_eq!(
+        &txtframe_iter.collect::<String>(),
+        "\u{1b}[0m┌───────────┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0mText Frame\u{1b}[0m \u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└───────────┘\u{1b}[0m"
     );
     }
 }
