@@ -13,7 +13,6 @@
 //!
 //! ```
 //! # use txtframe::*;
-//!
 //! # #[cfg(feature = "color")]
 //! let mut text_frame = TextFrame::new()
 //!     .frame_var(&FrameVar::Space)
@@ -34,6 +33,7 @@
 //!     .vert_right('│')
 //!     .btm_line('―')
 //!     .fill('░');
+//!
 //! # #[cfg(feature = "color")]
 //! let text_frame_iter = text_frame.frame_iter("Text frame");
 //! # #[cfg(feature = "color")]
