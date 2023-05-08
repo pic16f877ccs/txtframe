@@ -354,8 +354,20 @@ impl TextFrame {
         self
     }
 
+    /// Change top left corner.
+    pub fn set_left_top(&mut self, ch: char) -> &mut Self {
+        self.left_top_cnr = ch.into();
+        self
+    }
+
     /// Value for top line.
     pub fn top_line(mut self, ch: char) -> Self {
+        self.hor_top_line = ch.into();
+        self
+    }
+
+    /// Change top line.
+    pub fn set_top_line(&mut self, ch: char) -> &mut Self {
         self.hor_top_line = ch.into();
         self
     }
@@ -366,8 +378,20 @@ impl TextFrame {
         self
     }
 
+    /// Change top right corner.
+    pub fn set_right_top(&mut self, ch: char) -> &mut Self {
+        self.right_top_cnr = ch.into();
+        self
+    }
+
     /// Value for left vertical line.
     pub fn vert_left(mut self, ch: char) -> Self {
+        self.vert_left_line = ch.into();
+        self
+    }
+
+    /// Change left vertical line.
+    pub fn set_vert_left(&mut self, ch: char) -> &mut Self {
         self.vert_left_line = ch.into();
         self
     }
@@ -378,8 +402,20 @@ impl TextFrame {
         self
     }
 
+    /// Change right vertical line.
+    pub fn set_vert_right(&mut self, ch: char) -> &mut Self {
+        self.vert_right_line = ch.into();
+        self
+    }
+
     /// Value for bottom left corner.
     pub fn left_btm(mut self, ch: char) -> Self {
+        self.left_btm_cnr = ch.into();
+        self
+    }
+
+    /// Change bottom left corner.
+    pub fn set_left_btm(&mut self, ch: char) -> &mut Self {
         self.left_btm_cnr = ch.into();
         self
     }
@@ -390,8 +426,20 @@ impl TextFrame {
         self
     }
 
+    /// Change bottom line.
+    pub fn set_btm_line(&mut self, ch: char) -> &mut Self {
+        self.hor_btm_line = ch.into();
+        self
+    }
+
     /// Value for bottom right corner.
     pub fn right_btm(mut self, ch: char) -> Self {
+        self.right_btm_cnr = ch.into();
+        self
+    }
+
+    /// Change bottom right corner
+    pub fn set_right_btm(&mut self, ch: char) -> &mut Self {
         self.right_btm_cnr = ch.into();
         self
     }
@@ -402,8 +450,20 @@ impl TextFrame {
         self
     }
 
+    /// Change frame width.
+    pub fn set_width(&mut self, width: usize) -> &mut Self {
+        self.width = width;
+        self
+    }
+
     /// Value for frame height.
     pub fn height(mut self, height: usize) -> Self {
+        self.height = height;
+        self
+    }
+
+    /// Change frame height.
+    pub fn set_height(&mut self, height: usize) -> &mut Self {
         self.height = height;
         self
     }
@@ -414,8 +474,20 @@ impl TextFrame {
         self
     }
 
+    /// Change frame width expand.
+    pub fn set_expand_width(&mut self, width: usize) -> &mut Self {
+        self.expand_width = width;
+        self
+    }
+
     /// Value for frame height expand.
     pub fn expand_height(mut self, height: usize) -> Self {
+        self.expand_height = height;
+        self
+    }
+
+    /// Change frame height expand.
+    pub fn set_expand_height(&mut self, height: usize) -> &mut Self {
         self.expand_height = height;
         self
     }
@@ -426,14 +498,32 @@ impl TextFrame {
         self
     }
 
+    /// Change frame expand.
+    pub fn set_expand(&mut self, expand: usize) -> &mut Self {
+        self.expand = expand;
+        self
+    }
+
     /// Value for align expand.
     pub fn algn(mut self, algn: Algn) -> Self {
         self.algn = algn;
         self
     }
 
+    /// Change align expand.
+    pub fn set_algn(&mut self, algn: Algn) -> &mut Self {
+        self.algn = algn;
+        self
+    }
+
     /// Value for fill expand.
     pub fn fill(mut self, fill: char) -> Self {
+        self.fill = fill.into();
+        self
+    }
+
+    /// Change fill expand.
+    pub fn set_fill(&mut self, fill: char) -> &mut Self {
         self.fill = fill.into();
         self
     }
@@ -445,6 +535,13 @@ impl TextFrame {
         self
     }
 
+    /// Change frame color.
+    #[cfg(feature = "color")]
+    pub fn set_color_fra(&mut self, color: Color) -> &mut Self {
+        self.color_fra = color;
+        self
+    }
+
     /// Specifies the text color.
     #[cfg(feature = "color")]
     pub fn color_txt(mut self, color: Color) -> Self {
@@ -452,9 +549,23 @@ impl TextFrame {
         self
     }
 
+    /// Change text color.
+    #[cfg(feature = "color")]
+    pub fn set_color_txt(&mut self, color: Color) -> &mut Self {
+        self.color_txt = color;
+        self
+    }
+
     /// Specifies the fill color.
     #[cfg(feature = "color")]
     pub fn color_fill(mut self, color: Color) -> Self {
+        self.color_fill = color;
+        self
+    }
+
+    /// Change fill color.
+    #[cfg(feature = "color")]
+    pub fn set_color_fill(&mut self, color: Color) -> &mut Self {
         self.color_fill = color;
         self
     }
@@ -512,6 +623,19 @@ mod tests {
     );
     }
 
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_set_expand() {
+        let mut txtframe = TextFrame::new();
+        txtframe.set_expand(1);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(
+        &txtframe_iter.collect::<String>(),
+        "\u{1b}[0m┌──┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m  \u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m  \u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└──┘\u{1b}[0m"
+    );
+    }
+
     #[cfg(not(feature = "color"))]
     #[test]
     fn test_default_frame_expand() {
@@ -533,6 +657,19 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_set_expand_width() {
+        let mut txtframe = TextFrame::new();
+        txtframe.set_expand_width(1);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(
+            &txtframe_iter.collect::<String>(),
+            "\u{1b}[0m┌──┐\u{1b}[0m\n\u{1b}[0m└──┘\u{1b}[0m"
+        );
+    }
+
     #[cfg(not(feature = "color"))]
     #[test]
     fn test_default_frame_expand_width() {
@@ -546,6 +683,19 @@ mod tests {
     #[test]
     fn test_default_frame_red() {
         let txtframe = TextFrame::new().color_fra(Color::Red);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(
+            &txtframe_iter.collect::<String>(),
+            "\u{1b}[31m┌┐\u{1b}[0m\n\u{1b}[31m└┘\u{1b}[0m"
+        );
+    }
+
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_set_red() {
+        let mut txtframe = TextFrame::new();
+        txtframe.set_color_fra(Color::Red);
         let txtframe_iter = txtframe.frame_iter("");
 
         assert_eq!(
@@ -580,12 +730,38 @@ mod tests {
 
     #[cfg(feature = "color")]
     #[test]
+    fn test_default_frame_expand_set_fill_green() {
+        let mut txtframe = TextFrame::new().expand(1).color_fra(Color::Green);
+        txtframe.set_fill('░');
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(
+        &txtframe_iter.collect::<String>(),
+        "\u{1b}[32m┌──┐\u{1b}[0m\n\u{1b}[32m│\u{1b}[0m░░\u{1b}[32m│\u{1b}[0m\n\u{1b}[32m│\u{1b}[0m░░\u{1b}[32m│\u{1b}[0m\n\u{1b}[32m└──┘\u{1b}[0m"
+    );
+    }
+
+    #[cfg(feature = "color")]
+    #[test]
     fn test_default_frame_cyan_expand_fill_magenta() {
         let txtframe = TextFrame::new()
             .expand(1)
             .fill('░')
             .color_fra(Color::Cyan)
             .color_fill(Color::Magenta);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(
+        &txtframe_iter.collect::<String>(),
+        "\u{1b}[36m┌──┐\u{1b}[0m\n\u{1b}[36m│\u{1b}[35m░░\u{1b}[36m│\u{1b}[0m\n\u{1b}[36m│\u{1b}[35m░░\u{1b}[36m│\u{1b}[0m\n\u{1b}[36m└──┘\u{1b}[0m"
+    );
+    }
+
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_cyan_expand_fill_set_magenta() {
+        let mut txtframe = TextFrame::new().expand(1).color_fra(Color::Cyan).fill('░');
+        txtframe.set_color_fill(Color::Magenta);
         let txtframe_iter = txtframe.frame_iter("");
 
         assert_eq!(
@@ -610,6 +786,19 @@ mod tests {
     #[test]
     fn test_default_frame_height() {
         let txtframe = TextFrame::new().height(3);
+        let txtframe_iter = txtframe.frame_iter("");
+
+        assert_eq!(
+            &txtframe_iter.collect::<String>(),
+            "\u{1b}[0m┌┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└┘\u{1b}[0m"
+        );
+    }
+
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_set_height() {
+        let mut txtframe = TextFrame::new();
+        txtframe.set_height(3);
         let txtframe_iter = txtframe.frame_iter("");
 
         assert_eq!(
@@ -722,6 +911,31 @@ mod tests {
         assert_eq!(
         &txtframe_iter.collect::<String>(),
         "\u{1b}[0m┌───────────┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0mText Frame\u{1b}[0m \u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└───────────┘\u{1b}[0m"
+    );
+    }
+
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_text_color() {
+        let txtframe = TextFrame::new().color_txt(Color::Cyan);
+        let txtframe_iter = txtframe.frame_iter("Text Frame");
+
+        assert_eq!(
+        &txtframe_iter.collect::<String>(),
+        "\u{1b}[0m┌──────────┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[36mText Frame\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└──────────┘\u{1b}[0m"
+    );
+    }
+
+    #[cfg(feature = "color")]
+    #[test]
+    fn test_default_frame_set_text_color() {
+        let mut txtframe = TextFrame::new();
+        txtframe.set_color_txt(Color::Cyan);
+        let txtframe_iter = txtframe.frame_iter("Text Frame");
+
+        assert_eq!(
+        &txtframe_iter.collect::<String>(),
+        "\u{1b}[0m┌──────────┐\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[36mText Frame\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m└──────────┘\u{1b}[0m"
     );
     }
 }
