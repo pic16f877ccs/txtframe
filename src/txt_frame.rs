@@ -210,9 +210,10 @@ impl TextFrame {
         }
     }
 
-    #[cfg(feature = "newline")]
     #[cfg(feature = "color")]
-    /// Create an iterator frame.
+    #[cfg(feature = "newline")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "newline")))]
+    /// Create an iterator frame with a newline.
     pub fn frame_iterln<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
         let (lines, max_line_len) = max_line_len(text);
 
@@ -374,8 +375,9 @@ impl TextFrame {
             .chain(bottom_half_frame_iter)
     }
 
-    #[cfg(feature = "newline")]
     #[cfg(not(feature = "color"))]
+    #[cfg(feature = "newline")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "newline")))]
     /// Create an iterator frame.
     pub fn frame_iterln<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
         let sum_exp_width = self.expand_width + self.expand;
