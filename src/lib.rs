@@ -48,6 +48,7 @@ mod frame_var;
 mod txt_frame;
 
 pub use crate::algn::Algn;
+#[cfg(feature = "color")]
 #[cfg_attr(docsrs, doc(cfg(feature = "color")))]
 pub use crate::color::Color;
 pub use crate::frame_var::FrameVar;

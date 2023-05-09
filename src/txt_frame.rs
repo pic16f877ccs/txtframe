@@ -11,7 +11,6 @@ use smallstr::SmallString;
 ///
 /// ```rust
 /// # use txtframe::*;
-///
 /// # #[cfg(feature = "color")]
 /// let mut text_frame = TextFrame::new()
 ///     .frame_var(&FrameVar::Space)
@@ -33,13 +32,16 @@ use smallstr::SmallString;
 ///     .right_btm('┛')
 ///     .fill('░');
 ///
+/// # #[cfg(feature = "color")]
 /// # #[cfg(not(feature = "newlin"))]
 /// println!("{}", text_frame.frame_iter("Text frame").collect::<String>());
 ///
+/// # #[cfg(feature = "color")]
 /// # #[cfg(feature = "newlin")]
 /// let chain_iters = txt_frame.frame_iterln("First frame with text")
 /// .chain(txt_frame.frame_iterln("Second frame with text"));
 ///
+/// # #[cfg(feature = "color")]
 /// # #[cfg(feature = "newlin")]
 /// println!("{}", chain_iters.collect::<String>());
 /// ```
@@ -760,7 +762,6 @@ fn max_line_len(text: &str) -> (usize, usize) {
 mod tests {
     use super::*;
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame() {
@@ -773,7 +774,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_var() {
@@ -786,7 +786,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(not(feature = "color"))]
     #[test]
     fn test_default_frame() {
@@ -796,7 +795,6 @@ mod tests {
         assert_eq!(&txtframe_iter.collect::<String>(), "┌┐\n└┘");
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_expand() {
@@ -809,7 +807,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_var_double_expand() {
@@ -822,7 +819,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_var_hor_double_expand() {
@@ -835,7 +831,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_var_vert_double_expand() {
@@ -848,7 +843,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_var_round_expand() {
@@ -861,7 +855,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_var_horheavy_expand() {
@@ -874,7 +867,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_var_vertheavy_expand() {
@@ -887,7 +879,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_var_heavy_expand() {
@@ -900,7 +891,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_var_space_expand() {
@@ -913,7 +903,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(not(feature = "color"))]
     #[test]
     fn test_default_frame_expand() {
@@ -923,7 +912,6 @@ mod tests {
         assert_eq!(&txtframe_iter.collect::<String>(), "┌──┐\n│  │\n│  │\n└──┘");
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_expand_width() {
@@ -936,7 +924,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(not(feature = "color"))]
     #[test]
     fn test_default_frame_expand_width() {
@@ -946,7 +933,6 @@ mod tests {
         assert_eq!(&txtframe_iter.collect::<String>(), "┌──┐\n└──┘");
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_red() {
@@ -959,7 +945,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_expand_blue() {
@@ -972,7 +957,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_expand_fill_green() {
@@ -985,7 +969,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_cyan_expand_fill_magenta() {
@@ -1002,7 +985,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_text() {
@@ -1018,7 +1000,7 @@ mod tests {
     #[cfg(feature = "newline")]
     #[cfg(feature = "color")]
     #[test]
-    fn test_default_frame_text() {
+    fn test_default_frame_text_newline() {
         let txtframe = TextFrame::new();
         let txtframe_iter = txtframe.frame_iterln("Text Frame");
 
@@ -1028,7 +1010,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_height() {
@@ -1041,7 +1022,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_text_height() {
@@ -1101,7 +1081,6 @@ mod tests {
         assert_eq!(txtframe_iter.collect::<String>().lines().count(), 3);
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_height_lt() {
@@ -1114,7 +1093,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_width() {
@@ -1127,7 +1105,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_width_lt() {
@@ -1140,7 +1117,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_text_width() {
@@ -1153,7 +1129,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_text_color() {
@@ -1166,7 +1141,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_set_height() {
@@ -1180,7 +1154,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_set_expand_width() {
@@ -1194,7 +1167,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_set_expand() {
@@ -1208,7 +1180,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_set_red() {
@@ -1222,7 +1193,6 @@ mod tests {
         );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_set_text_color() {
@@ -1236,7 +1206,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_cyan_expand_fill_set_magenta() {
@@ -1250,7 +1219,6 @@ mod tests {
     );
     }
 
-    #[cfg(not(feature = "newline"))]
     #[cfg(feature = "color")]
     #[test]
     fn test_default_frame_expand_set_fill_green() {
