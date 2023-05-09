@@ -18,3 +18,7 @@ smallstr = "0.3.0"
 color = []
 newline = []
 default = ["color"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
