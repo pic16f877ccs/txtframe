@@ -217,82 +217,7 @@ impl TextFrame {
     #[cfg_attr(docsrs, doc(cfg(feature = "newline")))]
     /// Create an iterator frame with a newline.
     pub fn frame_iterln<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
-        let (lines, max_line_len) = max_line_len(text);
-
-        let sum_exp_width = self.expand_width + self.expand;
-        let max_line_len = if ((max_line_len + 2) + sum_exp_width * 2) < self.width {
-            (self.width - (max_line_len + 2 + sum_exp_width * 2)) + max_line_len
-        } else {
-            max_line_len
-        } + sum_exp_width * 2;
-
-        let sum_exp_height = self.expand + self.expand_height;
-        let sum_lines = sum_exp_height * 2 + 2 + lines;
-        let take_enlarge_top = (max_line_len + 7) * sum_exp_height;
-
-        let take_enlarge_btm = if sum_lines < self.height {
-            take_enlarge_top + (max_line_len + 7) * (self.height - sum_lines)
-        } else {
-            take_enlarge_top
-        };
-
-        let enlarge_line_iter = iter::once(self.color_fra.into_fg_str())
-            .chain(iter::once(self.vert_left_line.as_str()))
-            .chain(iter::once(self.color_fill.into_fg_str()))
-            .chain(iter::repeat(self.fill.as_str()).take(max_line_len))
-            .chain(iter::once(self.color_fra.into_fg_str()))
-            .chain(iter::once(self.vert_right_line.as_str()))
-            .chain(iter::once(Color::default().into_fg_str()))
-            .chain(iter::once("\n"))
-            .cycle();
-
-        let top_half_frame_iter = iter::once(self.color_fra.into_fg_str())
-            .chain(iter::once(self.left_top_cnr.as_str()))
-            .chain(iter::repeat(self.hor_top_line.as_str()).take(max_line_len))
-            .chain(iter::once(self.right_top_cnr.as_str()))
-            .chain(iter::once(Color::default().into_fg_str()))
-            .chain(iter::once("\n"))
-            .chain(enlarge_line_iter.clone().take(take_enlarge_top));
-
-        let bottom_half_frame_iter = enlarge_line_iter
-            .take(take_enlarge_btm)
-            .chain(iter::once(self.color_fra.into_fg_str()))
-            .chain(iter::once(self.left_btm_cnr.as_str()))
-            .chain(iter::repeat(self.hor_btm_line.as_str()).take(max_line_len))
-            .chain(iter::once(self.right_btm_cnr.as_str()))
-            .chain(iter::once(Color::default().into_fg_str()));
-
-        let lines_buffer_iter = text.lines().flat_map(move |line| {
-            let curr_line_len = line.chars().count();
-            let max_line_diff = max_line_len - curr_line_len;
-
-            let alignment = match self.algn {
-                Algn::Left => (sum_exp_width, max_line_diff - sum_exp_width),
-                Algn::Centr => (max_line_diff / 2, max_line_diff - max_line_diff / 2),
-                Algn::Right => (max_line_diff - sum_exp_width, sum_exp_width),
-            };
-
-            let iter_top = iter::once(self.color_fra.into_fg_str())
-                .chain(iter::once(self.vert_left_line.as_str()))
-                .chain(iter::once(self.color_fill.into_fg_str()))
-                .chain(iter::repeat(self.fill.as_str()).take(alignment.0));
-
-            let iter_line = iter::once(self.color_txt.into_fg_str()).chain(iter::once(line));
-
-            let iter_bottom = iter::once(self.color_fill.into_fg_str())
-                .chain(iter::repeat(self.fill.as_str()))
-                .take(alignment.1 + 1)
-                .chain(iter::once(self.color_fra.into_fg_str()))
-                .chain(iter::once(self.vert_right_line.as_str()))
-                .chain(iter::once(Color::default().into_fg_str()))
-                .chain(iter::once("\n"));
-
-            iter_top.chain(iter_line).chain(iter_bottom)
-        });
-
-        top_half_frame_iter
-            .chain(lines_buffer_iter)
-            .chain(bottom_half_frame_iter)
+        self.frame_iter(&text)
             .chain(iter::once("\n"))
     }
 
@@ -382,68 +307,7 @@ impl TextFrame {
     #[cfg_attr(docsrs, doc(cfg(feature = "newline")))]
     /// Create an iterator frame.
     pub fn frame_iterln<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
-        let sum_exp_width = self.expand_width + self.expand;
-        let (lines, max_line_len) = max_line_len(text);
-        let sum_exp_height = self.expand + self.expand_height;
-        let sum_lines = sum_exp_height * 2 + 2 + lines;
-
-        let max_line_len = if ((max_line_len + 2) + sum_exp_width * 2) < self.width {
-            (self.width - (max_line_len + 2 + sum_exp_width * 2)) + max_line_len
-        } else {
-            max_line_len
-        } + sum_exp_width * 2;
-
-        let take_enlarge_top = (max_line_len + 3) * sum_exp_height;
-        let take_enlarge_btm = if sum_lines < self.height {
-            (max_line_len + 3) * (self.height - sum_lines)
-        } else {
-            take_enlarge_top
-        };
-
-        let enlarge_line_iter = iter::once(self.vert_left_line.as_str())
-            .chain(iter::repeat(self.fill.as_str()).take(max_line_len))
-            .chain(iter::once(self.vert_right_line.as_str()))
-            .chain(iter::once("\n"))
-            .cycle();
-
-        let top_half_frame_iter = iter::once(self.left_top_cnr.as_str())
-            .chain(iter::repeat(self.hor_top_line.as_str()).take(max_line_len))
-            .chain(iter::once(self.right_top_cnr.as_str()))
-            .chain(iter::once("\n"))
-            .chain(enlarge_line_iter.clone().take(take_enlarge_top));
-
-        let bottom_half_frame_iter = enlarge_line_iter
-            .take(take_enlarge_btm)
-            .chain(iter::once(self.left_btm_cnr.as_str()))
-            .chain(iter::repeat(self.hor_btm_line.as_str()).take(max_line_len))
-            .chain(iter::once(self.right_btm_cnr.as_str()));
-
-        let lines_buffer_iter = text.lines().flat_map(move |line| {
-            let curr_line_len = line.chars().count();
-            let max_line_diff = max_line_len - curr_line_len;
-
-            let alignment = match self.algn {
-                Algn::Left => (sum_exp_width, max_line_diff - sum_exp_width),
-                Algn::Centr => (max_line_diff / 2, max_line_diff - max_line_diff / 2),
-                Algn::Right => (max_line_diff - sum_exp_width, sum_exp_width),
-            };
-
-            let iter_top = iter::once(self.vert_left_line.as_str())
-                .chain(iter::repeat(self.fill.as_str()).take(alignment.0));
-
-            let iter_line = iter::once(line);
-
-            let iter_bottom = iter::repeat(self.fill.as_str())
-                .take(alignment.1)
-                .chain(iter::once(self.vert_right_line.as_str()))
-                .chain(iter::once("\n"));
-
-            iter_top.chain(iter_line).chain(iter_bottom)
-        });
-
-        top_half_frame_iter
-            .chain(lines_buffer_iter)
-            .chain(bottom_half_frame_iter)
+        self.frame_iter(&text)
             .chain(iter::once("\n"))
     }
 
@@ -788,11 +652,20 @@ mod tests {
 
     #[cfg(not(feature = "color"))]
     #[test]
-    fn test_default_frame() {
+    fn test_not_color_default_frame() {
         let txtframe = TextFrame::new();
         let txtframe_iter = txtframe.frame_iter("");
 
         assert_eq!(&txtframe_iter.collect::<String>(), "┌┐\n└┘");
+    }
+
+    #[cfg(not(feature = "color"))]
+    #[test]
+    fn test_not_color_default_frame_newline() {
+        let txtframe = TextFrame::new();
+        let txtframe_iter = txtframe.frame_iterln("");
+
+        assert_eq!(&txtframe_iter.collect::<String>(), "┌┐\n└┘\n");
     }
 
     #[cfg(feature = "color")]
