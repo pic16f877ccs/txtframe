@@ -5,7 +5,9 @@
     missing_copy_implementations,
     rustdoc::broken_intra_doc_links
 )]
-//! Display text in a frame.
+#![cfg_attr(docsrs, feature(doc_cfg))]
+//! # Display text in a frame.
+//!
 //! Displays text within predefined or custom frames.
 //! You can set the frame color, change the text alignment.
 //!
@@ -48,6 +50,8 @@ mod txt_frame;
 
 pub use crate::algn::Algn;
 #[cfg(feature = "color")]
+#[cfg_attr(docsrs, doc(cfg(feature = "color")))]
 pub use crate::color::Color;
 pub use crate::frame_var::FrameVar;
 pub use crate::txt_frame::TextFrame;
+
