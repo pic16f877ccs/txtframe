@@ -99,7 +99,7 @@ impl TextFrame {
         }
     }
 
-    /// Select preset frames.
+    /// Selecting preset frames.
     pub fn frame_var(self, vars: &FrameVar) -> Self {
         match vars {
             FrameVar::Double => Self {
@@ -378,7 +378,7 @@ impl TextFrame {
             .chain(bottom_half_frame_iter)
     }
 
-    /// Value for top left corner.
+    /// Specifies the top left corner.
     pub fn left_top(mut self, ch: char) -> Self {
         self.left_top_cnr = ch.into();
         self
@@ -390,7 +390,7 @@ impl TextFrame {
         self
     }
 
-    /// Value for top line.
+    /// Specifies the top line.
     pub fn top_line(mut self, ch: char) -> Self {
         self.hor_top_line = ch.into();
         self
@@ -402,7 +402,7 @@ impl TextFrame {
         self
     }
 
-    /// Value for top right corner.
+    /// Specifies the top right corner.
     pub fn right_top(mut self, ch: char) -> Self {
         self.right_top_cnr = ch.into();
         self
@@ -414,7 +414,7 @@ impl TextFrame {
         self
     }
 
-    /// Value for left vertical line.
+    /// Specifies the left vertical line.
     pub fn vert_left(mut self, ch: char) -> Self {
         self.vert_left_line = ch.into();
         self
@@ -426,7 +426,7 @@ impl TextFrame {
         self
     }
 
-    /// Value for right vertical line.
+    /// Specifies the right vertical line.
     pub fn vert_right(mut self, ch: char) -> Self {
         self.vert_right_line = ch.into();
         self
@@ -438,7 +438,7 @@ impl TextFrame {
         self
     }
 
-    /// Value for bottom left corner.
+    /// Specifies the bottom left corner.
     pub fn left_btm(mut self, ch: char) -> Self {
         self.left_btm_cnr = ch.into();
         self
@@ -450,7 +450,7 @@ impl TextFrame {
         self
     }
 
-    /// Value for bottom line.
+    /// Specifies the bottom line.
     pub fn btm_line(mut self, ch: char) -> Self {
         self.hor_btm_line = ch.into();
         self
@@ -462,7 +462,7 @@ impl TextFrame {
         self
     }
 
-    /// Value for bottom right corner.
+    /// Specifies the bottom right corner.
     pub fn right_btm(mut self, ch: char) -> Self {
         self.right_btm_cnr = ch.into();
         self
@@ -498,25 +498,25 @@ impl TextFrame {
         self
     }
 
-    /// Value for frame width expand.
+    /// Value for the width of the frame extension.
     pub fn expand_width(mut self, width: usize) -> Self {
         self.expand_width = width;
         self
     }
 
-    /// Change frame width expand.
+    /// Change the width of the frame extension.
     pub fn set_expand_width(&mut self, width: usize) -> &mut Self {
         self.expand_width = width;
         self
     }
 
-    /// Value for frame height expand.
+    /// Value for the height of the frame extension.
     pub fn expand_height(mut self, height: usize) -> Self {
         self.expand_height = height;
         self
     }
 
-    /// Change frame height expand.
+    /// Change the height of the frame extension.
     pub fn set_expand_height(&mut self, height: usize) -> &mut Self {
         self.expand_height = height;
         self
@@ -534,25 +534,25 @@ impl TextFrame {
         self
     }
 
-    /// Value for align expand.
+    /// Specifies the text alignment.
     pub fn algn(mut self, algn: Algn) -> Self {
         self.algn = algn;
         self
     }
 
-    /// Change align expand.
+    /// Change text alignment.
     pub fn set_algn(&mut self, algn: Algn) -> &mut Self {
         self.algn = algn;
         self
     }
 
-    /// Value for fill expand.
+    /// Specifies the fill character.
     pub fn fill(mut self, fill: char) -> Self {
         self.fill = fill.into();
         self
     }
 
-    /// Change fill expand.
+    /// Change fill character.
     pub fn set_fill(&mut self, fill: char) -> &mut Self {
         self.fill = fill.into();
         self
@@ -659,6 +659,7 @@ mod tests {
         assert_eq!(&txtframe_iter.collect::<String>(), "┌┐\n└┘");
     }
 
+    #[cfg(feature = "newline")]
     #[cfg(not(feature = "color"))]
     #[test]
     fn test_not_color_default_frame_newline() {

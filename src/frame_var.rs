@@ -1,4 +1,4 @@
-/// Preset frames.
+/// Sets a predetermined frame.
 #[allow(missing_docs)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FrameVar {

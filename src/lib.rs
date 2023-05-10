@@ -6,7 +6,8 @@
     rustdoc::broken_intra_doc_links
 )]
 #![cfg_attr(docsrs, feature(doc_cfg))]
-//! Display text in a frame.
+//! # Display text in a frame.
+//!
 //! Displays text within predefined or custom frames.
 //! You can set the frame color, change the text alignment.
 //!
