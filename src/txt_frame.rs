@@ -218,7 +218,7 @@ impl TextFrame {
     #[cfg(feature = "color")]
     #[cfg(feature = "newline")]
     #[cfg_attr(docsrs, doc(cfg(feature = "newline")))]
-    pub fn frame_iterln<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
+    pub fn frame_iterln<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> + 'a {
         self.frame_iter(&text).chain(iter::once("\n"))
     }
 
@@ -308,14 +308,14 @@ impl TextFrame {
     #[cfg(feature = "color")]
     #[cfg(feature = "newline")]
     #[cfg_attr(docsrs, doc(cfg(feature = "newline")))]
-    pub fn frame_iterln_esc<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
+    pub fn frame_iterln_esc<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> + 'a {
         self.frame_iter(&text).chain(iter::once("\n"))
     }
 
     /// Create an iterator frame.
     #[cfg(feature = "esc")]
     #[cfg(feature = "color")]
-    pub fn frame_iter_esc<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
+    pub fn frame_iter_esc<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> + 'a {
         let (lines, max_line_len) = max_line_len_no_esc(text);
 
         let sum_exp_width = self.expand_width + self.expand;
@@ -401,13 +401,13 @@ impl TextFrame {
     #[cfg(not(feature = "color"))]
     #[cfg(feature = "newline")]
     #[cfg_attr(docsrs, doc(cfg(feature = "newline")))]
-    pub fn frame_iterln<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
+    pub fn frame_iterln<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> + 'a {
         self.frame_iter(&text).chain(iter::once("\n"))
     }
 
     /// Create an iterator frame.
     #[cfg(not(feature = "color"))]
-    pub fn frame_iter<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
+    pub fn frame_iter<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> + 'a {
         let sum_exp_width = self.expand_width + self.expand;
         let (lines, max_line_len) = max_line_len(text);
         let sum_exp_height = self.expand + self.expand_height;
