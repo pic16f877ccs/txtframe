@@ -960,3 +960,41 @@ fn esc_test_default_frame_expand_set_fill_green() {
     "\u{1b}[32m┌──┐\u{1b}[0m\n\u{1b}[32m│\u{1b}[0m░░\u{1b}[32m│\u{1b}[0m\n\u{1b}[32m│\u{1b}[0m░░\u{1b}[32m│\u{1b}[0m\n\u{1b}[32m└──┘\u{1b}[0m"
 );
 }
+
+#[cfg(feature = "esc")]
+#[cfg(feature = "color")]
+#[test]
+fn esc_frame_in_frame() {
+    let frame_in_frame = TextFrame::new()
+    .algn(Algn::Right)
+    .color_fra(Color::Red)
+    .color_txt(Color::Cyan)
+    .color_fill(Color::Magenta)
+    .expand(2)
+    .expand_width(5)
+    .fill('░');
+
+    let text_frame = TextFrame::new()
+    .frame_var(&FrameVar::Space)
+    .algn(Algn::Right)
+    .expand(0)
+    .width(0)
+    .expand_width(0)
+    .expand_height(0)
+    .left_top('✤')
+    .right_top('✤')
+    .left_btm('✤')
+    .right_btm('✤')
+    .top_line('―')
+    .vert_left('│')
+    .vert_right('│')
+    .btm_line('―')
+    .fill('░');
+
+    let frame_in_frame = frame_in_frame.frame_iter("Text frame\ntxt").collect::<String>();
+    let text_frame_main = text_frame.frame_iter_esc(&frame_in_frame).collect::<String>();
+    println!("{}", text_frame_main);
+assert_eq!(&text_frame_main,
+"\u{1b}[0m✤――――――――――――――――――――――――――✤\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0m\u{1b}[31m┌────────────────────────┐\u{1b}[0m\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0m\u{1b}[31m│\u{1b}[35m░░░░░░░░░░░░░░░░░░░░░░░░\u{1b}[31m│\u{1b}[0m\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0m\u{1b}[31m│\u{1b}[35m░░░░░░░░░░░░░░░░░░░░░░░░\u{1b}[31m│\u{1b}[0m\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0m\u{1b}[31m│\u{1b}[35m░░░░░░░\u{1b}[36mText frame\u{1b}[35m░░░░░░░\u{1b}[31m│\u{1b}[0m\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0m\u{1b}[31m│\u{1b}[35m░░░░░░░░░░░░░░\u{1b}[36mtxt\u{1b}[35m░░░░░░░\u{1b}[31m│\u{1b}[0m\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0m\u{1b}[31m│\u{1b}[35m░░░░░░░░░░░░░░░░░░░░░░░░\u{1b}[31m│\u{1b}[0m\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0m\u{1b}[31m│\u{1b}[35m░░░░░░░░░░░░░░░░░░░░░░░░\u{1b}[31m│\u{1b}[0m\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m│\u{1b}[0m\u{1b}[0m\u{1b}[31m└────────────────────────┘\u{1b}[0m\u{1b}[0m\u{1b}[0m│\u{1b}[0m\n\u{1b}[0m✤――――――――――――――――――――――――――✤\u{1b}[0m"
+);
+}
