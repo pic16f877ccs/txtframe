@@ -4,6 +4,7 @@ use crate::Color;
 use crate::FrameVar;
 use core::iter;
 use smallstr::SmallString;
+#[cfg(feature = "esc")]
 use strip_ansi_escapes::strip;
 
 /// The abstract representation of a TextFrame.
@@ -213,17 +214,16 @@ impl TextFrame {
         }
     }
 
+    /// Create an iterator frame with a newline.
     #[cfg(feature = "color")]
     #[cfg(feature = "newline")]
     #[cfg_attr(docsrs, doc(cfg(feature = "newline")))]
-    /// Create an iterator frame with a newline.
     pub fn frame_iterln<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
-        self.frame_iter(&text)
-            .chain(iter::once("\n"))
+        self.frame_iter(&text).chain(iter::once("\n"))
     }
 
-    #[cfg(feature = "color")]
     /// Create an iterator frame.
+    #[cfg(feature = "color")]
     pub fn frame_iter<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
         let (lines, max_line_len) = max_line_len(text);
 
@@ -303,19 +303,18 @@ impl TextFrame {
             .chain(bottom_half_frame_iter)
     }
 
+    /// Create an iterator frame with a newline.
     #[cfg(feature = "esc")]
     #[cfg(feature = "color")]
     #[cfg(feature = "newline")]
     #[cfg_attr(docsrs, doc(cfg(feature = "newline")))]
-    /// Create an iterator frame with a newline.
     pub fn frame_iterln_esc<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
-        self.frame_iter(&text)
-            .chain(iter::once("\n"))
+        self.frame_iter(&text).chain(iter::once("\n"))
     }
 
+    /// Create an iterator frame.
     #[cfg(feature = "esc")]
     #[cfg(feature = "color")]
-    /// Create an iterator frame.
     pub fn frame_iter_esc<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
         let (lines, max_line_len) = max_line_len_no_esc(text);
 
@@ -363,7 +362,10 @@ impl TextFrame {
             .chain(iter::once(Color::default().into_fg_str()));
 
         let lines_buffer_iter = text.lines().flat_map(move |line| {
-            let curr_line_len = std::str::from_utf8(&strip(line).unwrap()).unwrap().chars().count();
+            let curr_line_len = std::str::from_utf8(&strip(line).unwrap())
+                .unwrap()
+                .chars()
+                .count();
             let max_line_diff = max_line_len - curr_line_len;
 
             let alignment = match self.algn {
@@ -395,17 +397,16 @@ impl TextFrame {
             .chain(bottom_half_frame_iter)
     }
 
+    /// Create an iterator frame.
     #[cfg(not(feature = "color"))]
     #[cfg(feature = "newline")]
     #[cfg_attr(docsrs, doc(cfg(feature = "newline")))]
-    /// Create an iterator frame.
     pub fn frame_iterln<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
-        self.frame_iter(&text)
-            .chain(iter::once("\n"))
+        self.frame_iter(&text).chain(iter::once("\n"))
     }
 
-    #[cfg(not(feature = "color"))]
     /// Create an iterator frame.
+    #[cfg(not(feature = "color"))]
     pub fn frame_iter<'a>(&'a self, text: &'a str) -> impl Iterator<Item = &str> {
         let sum_exp_width = self.expand_width + self.expand;
         let (lines, max_line_len) = max_line_len(text);
@@ -478,6 +479,7 @@ impl TextFrame {
     }
 
     /// Change top left corner.
+    #[inline]
     pub fn set_left_top(&mut self, ch: char) -> &mut Self {
         self.left_top_cnr = ch.into();
         self
@@ -490,6 +492,7 @@ impl TextFrame {
     }
 
     /// Change top line.
+    #[inline]
     pub fn set_top_line(&mut self, ch: char) -> &mut Self {
         self.hor_top_line = ch.into();
         self
@@ -502,6 +505,7 @@ impl TextFrame {
     }
 
     /// Change top right corner.
+    #[inline]
     pub fn set_right_top(&mut self, ch: char) -> &mut Self {
         self.right_top_cnr = ch.into();
         self
@@ -514,6 +518,7 @@ impl TextFrame {
     }
 
     /// Change left vertical line.
+    #[inline]
     pub fn set_vert_left(&mut self, ch: char) -> &mut Self {
         self.vert_left_line = ch.into();
         self
@@ -526,6 +531,7 @@ impl TextFrame {
     }
 
     /// Change right vertical line.
+    #[inline]
     pub fn set_vert_right(&mut self, ch: char) -> &mut Self {
         self.vert_right_line = ch.into();
         self
@@ -538,6 +544,7 @@ impl TextFrame {
     }
 
     /// Change bottom left corner.
+    #[inline]
     pub fn set_left_btm(&mut self, ch: char) -> &mut Self {
         self.left_btm_cnr = ch.into();
         self
@@ -550,6 +557,7 @@ impl TextFrame {
     }
 
     /// Change bottom line.
+    #[inline]
     pub fn set_btm_line(&mut self, ch: char) -> &mut Self {
         self.hor_btm_line = ch.into();
         self
@@ -562,6 +570,7 @@ impl TextFrame {
     }
 
     /// Change bottom right corner
+    #[inline]
     pub fn set_right_btm(&mut self, ch: char) -> &mut Self {
         self.right_btm_cnr = ch.into();
         self
@@ -574,6 +583,7 @@ impl TextFrame {
     }
 
     /// Change frame width.
+    #[inline]
     pub fn set_width(&mut self, width: usize) -> &mut Self {
         self.width = width;
         self
@@ -586,6 +596,7 @@ impl TextFrame {
     }
 
     /// Change frame height.
+    #[inline]
     pub fn set_height(&mut self, height: usize) -> &mut Self {
         self.height = height;
         self
@@ -598,6 +609,7 @@ impl TextFrame {
     }
 
     /// Change the width of the frame extension.
+    #[inline]
     pub fn set_expand_width(&mut self, width: usize) -> &mut Self {
         self.expand_width = width;
         self
@@ -610,6 +622,7 @@ impl TextFrame {
     }
 
     /// Change the height of the frame extension.
+    #[inline]
     pub fn set_expand_height(&mut self, height: usize) -> &mut Self {
         self.expand_height = height;
         self
@@ -622,6 +635,7 @@ impl TextFrame {
     }
 
     /// Change frame expand.
+    #[inline]
     pub fn set_expand(&mut self, expand: usize) -> &mut Self {
         self.expand = expand;
         self
@@ -634,6 +648,7 @@ impl TextFrame {
     }
 
     /// Change text alignment.
+    #[inline]
     pub fn set_algn(&mut self, algn: Algn) -> &mut Self {
         self.algn = algn;
         self
@@ -646,62 +661,66 @@ impl TextFrame {
     }
 
     /// Change fill character.
+    #[inline]
     pub fn set_fill(&mut self, fill: char) -> &mut Self {
         self.fill = fill.into();
         self
     }
 
+    /// Specifies the frame color.
     #[cfg(feature = "color")]
     #[cfg_attr(docsrs, doc(cfg(feature = "color")))]
-    /// Specifies the frame color.
     pub fn color_fra(mut self, color: Color) -> Self {
         self.color_fra = color;
         self
     }
 
+    /// Change frame color.
+    #[inline]
     #[cfg(feature = "color")]
     #[cfg_attr(docsrs, doc(cfg(feature = "color")))]
-    /// Change frame color.
     pub fn set_color_fra(&mut self, color: Color) -> &mut Self {
         self.color_fra = color;
         self
     }
 
+    /// Specifies the text color.
     #[cfg(feature = "color")]
     #[cfg_attr(docsrs, doc(cfg(feature = "color")))]
-    /// Specifies the text color.
     pub fn color_txt(mut self, color: Color) -> Self {
         self.color_txt = color;
         self
     }
 
+    /// Change text color.
+    #[inline]
     #[cfg(feature = "color")]
     #[cfg_attr(docsrs, doc(cfg(feature = "color")))]
-    /// Change text color.
     pub fn set_color_txt(&mut self, color: Color) -> &mut Self {
         self.color_txt = color;
         self
     }
 
+    /// Specifies the fill color.
     #[cfg(feature = "color")]
     #[cfg_attr(docsrs, doc(cfg(feature = "color")))]
-    /// Specifies the fill color.
     pub fn color_fill(mut self, color: Color) -> Self {
         self.color_fill = color;
         self
     }
 
+    /// Change fill color.
+    #[inline]
     #[cfg(feature = "color")]
     #[cfg_attr(docsrs, doc(cfg(feature = "color")))]
-    /// Change fill color.
     pub fn set_color_fill(&mut self, color: Color) -> &mut Self {
         self.color_fill = color;
         self
     }
 }
 
-#[cfg(feature = "esc")]
 #[inline]
+#[cfg(feature = "esc")]
 fn max_line_len_no_esc(text: &str) -> (usize, usize) {
     max_line_len(std::str::from_utf8(&strip(text).unwrap()).unwrap())
 }
@@ -720,4 +739,3 @@ fn max_line_len(text: &str) -> (usize, usize) {
 
     (line_cout, max_len)
 }
-
